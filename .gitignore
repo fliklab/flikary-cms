@@ -1,2 +1,25 @@
-.cursor
+
+# Dependency directories
+node_modules/
+dist/
+
+# Environment variables
+.env
+
+# Package manager files
+pnpm-lock.yaml
+
+# Logs
+*.log
+
+# System files
+.DS_Store
+
+# Coverage reports
+coverage/
+
+# Temporary files
+tmp/
+
+# Cursor files
 .cursor/*

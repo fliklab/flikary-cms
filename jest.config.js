@@ -6,4 +6,5 @@ module.exports = {
   },
   setupFilesAfterEnv: ["<rootDir>/tests/setupTests.ts"],
   testPathIgnorePatterns: ["/node_modules/", "/dist/"],
+  roots: ["<rootDir>/tests", "<rootDir>/src"], // 프로젝트 내 테스트만 실행
 };
