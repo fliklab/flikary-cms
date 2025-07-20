@@ -29,4 +29,32 @@ describe("mdxParser", () => {
     expect(posts.length).toBe(1);
     expect(posts[0].slug).toBe("test");
   });
+
+  it("실제 content/posts 디렉토리의 파일들을 파싱한다", () => {
+    const postsDir = path.join(process.cwd(), "content/posts");
+    const posts = getAllPosts(postsDir);
+
+    // 최소 4개의 포스트가 있어야 함 (샘플 파일들)
+    expect(posts.length).toBeGreaterThanOrEqual(4);
+
+    // 특정 포스트들이 존재하는지 확인
+    const slugs = posts.map((post) => post.slug);
+    expect(slugs).toContain("hello-world");
+    expect(slugs).toContain("getting-started");
+    expect(slugs).toContain("api-documentation");
+    expect(slugs).toContain("advanced-features");
+  });
+
+  it("포스트의 메타데이터가 올바르게 파싱된다", () => {
+    const postsDir = path.join(process.cwd(), "content/posts");
+    const posts = getAllPosts(postsDir);
+
+    const gettingStarted = posts.find(
+      (post) => post.slug === "getting-started"
+    );
+    expect(gettingStarted).toBeDefined();
+    expect(gettingStarted?.title).toBe("Getting Started with Flikary CMS");
+    expect(gettingStarted?.tags).toContain("guide");
+    expect(gettingStarted?.tags).toContain("tutorial");
+  });
 });

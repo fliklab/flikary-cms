@@ -1,0 +1,20 @@
+{
+  "routes": [
+    {
+      "src": "/api/posts",
+      "dest": "/api/posts/index.ts"
+    },
+    {
+      "src": "/api/posts/(?<slug>[^/]+)",
+      "dest": "/api/posts/[slug].ts"
+    },
+    {
+      "src": "/api/posts/(?<slug>[^/]+)/html",
+      "dest": "/api/posts/[slug]/html.ts"
+    },
+    {
+      "src": "/api/posts/(?<slug>[^/]+)/raw",
+      "dest": "/api/posts/[slug]/raw.ts"
+    }
+  ]
+}

@@ -1,0 +1,65 @@
+---
+title: API Documentation
+date: 2024-07-20
+tags:
+  - api
+  - documentation
+  - reference
+---
+
+# API Documentation
+
+Flikary CMS API의 상세 문서입니다.
+
+## 포스트 목록 조회
+
+### 요청
+```
+GET /api/posts
+```
+
+### 응답
+```json
+[
+  {
+    "slug": "hello-world",
+    "title": "Hello World",
+    "date": "2024-06-01T00:00:00.000Z",
+    "tags": ["sample", "test"]
+  }
+]
+```
+
+## 포스트 상세 조회
+
+### 요청
+```
+GET /api/posts/{slug}
+```
+
+### 응답
+```json
+{
+  "slug": "hello-world",
+  "title": "Hello World",
+  "date": "2024-06-01T00:00:00.000Z",
+  "tags": ["sample", "test"],
+  "content": "# Hello World\n\n이것은 샘플 mdx 파일입니다."
+}
+```
+
+## 에러 응답
+
+### 404 Not Found
+```json
+{
+  "error": "Post not found"
+}
+```
+
+### 500 Internal Server Error
+```json
+{
+  "error": "Failed to load post"
+}
+``` 

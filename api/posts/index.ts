@@ -1,6 +1,6 @@
 import { VercelRequest, VercelResponse } from "@vercel/node";
 import path from "path";
-import { getAllPosts } from "@/utils/mdxParser";
+import { getAllPosts } from "../../src/utils/mdxParser.js";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   try {

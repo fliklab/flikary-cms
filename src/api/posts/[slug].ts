@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
+import { VercelRequest, VercelResponse } from "@vercel/node";
 import path from "path";
 import fs from "fs";
 import { parseMdxFile } from "@/utils/mdxParser";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default function handler(req: VercelRequest, res: VercelResponse) {
   const { slug } = req.query;
   if (typeof slug !== "string") {
     return res.status(400).json({ error: "Invalid slug" });
