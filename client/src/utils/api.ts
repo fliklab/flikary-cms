@@ -2,6 +2,15 @@ import { Post, PostMeta } from "../types/Post";
 
 const API_BASE = "/api";
 
+// 포스트 목록 조회 함수
+export const fetchPosts = async (): Promise<PostMeta[]> => {
+  const response = await fetch(`${API_BASE}/posts`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch posts");
+  }
+  return response.json();
+};
+
 export const api = {
   // 포스트 목록 조회
   async getPosts(): Promise<PostMeta[]> {

@@ -8,6 +8,7 @@ import { AlertModal } from "./components/AlertModal";
 import { LoadingSpinner } from "./components/LoadingSpinner";
 import { SuspenseBoundary } from "./components/SuspenseBoundary";
 import { SearchBar } from "./components/SearchBar";
+import PostList from "./components/PostList";
 import { usePosts, usePost } from "./hooks/usePosts";
 import "./App.css";
 
@@ -22,6 +23,7 @@ function App() {
   const [isEditing, setIsEditing] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showPostList, setShowPostList] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [alertModal, setAlertModal] = useState<{
     isOpen: boolean;
@@ -48,6 +50,7 @@ function App() {
     startTransition(() => {
       setSelectedPost(slug);
       setIsEditing(false);
+      setShowPostList(false);
     });
   };
 
@@ -103,12 +106,20 @@ function App() {
   const handleShowHelp = () => {
     startTransition(() => {
       setShowHelp(true);
+      setShowPostList(false);
     });
   };
 
   const handleShowSearch = () => {
     startTransition(() => {
       setShowSearch(true);
+    });
+  };
+
+  const handleShowPostList = () => {
+    startTransition(() => {
+      setShowPostList(true);
+      setShowHelp(false);
     });
   };
 
@@ -144,12 +155,15 @@ function App() {
         onCreatePost={handleCreatePost}
         onShowHelp={handleShowHelp}
         onShowSearch={handleShowSearch}
+        onShowPostList={handleShowPostList}
       />
 
       <div className="main-content">
         <SuspenseBoundary>
           {showHelp ? (
             <HelpPage onBack={() => setShowHelp(false)} />
+          ) : showPostList ? (
+            <PostList onPostSelect={(post) => handleSelectPost(post.slug)} />
           ) : selectedPost ? (
             postLoading ? (
               <div className="loading">
@@ -179,21 +193,35 @@ function App() {
             <div className="welcome">
               <h1>Flikary CMS에 오신 것을 환영합니다</h1>
               <p>왼쪽에서 포스트를 선택하거나 새 포스트를 작성하세요.</p>
-              <button
-                className="help-link"
-                onClick={handleShowHelp}
-                style={{
-                  marginTop: "20px",
-                  padding: "8px 16px",
-                  background: "#007bff",
-                  color: "white",
-                  border: "none",
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                }}
-              >
-                도움말 보기
-              </button>
+              <div style={{ marginTop: "20px", display: "flex", gap: "10px" }}>
+                <button
+                  className="help-link"
+                  onClick={handleShowHelp}
+                  style={{
+                    padding: "8px 16px",
+                    background: "#007bff",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  도움말 보기
+                </button>
+                <button
+                  onClick={handleShowPostList}
+                  style={{
+                    padding: "8px 16px",
+                    background: "#28a745",
+                    color: "white",
+                    border: "none",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                  }}
+                >
+                  API 테스트
+                </button>
+              </div>
             </div>
           )}
         </SuspenseBoundary>

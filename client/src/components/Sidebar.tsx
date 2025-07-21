@@ -1,5 +1,12 @@
 import { PostMeta } from "../types/Post";
-import { FileText, Plus, Settings, HelpCircle, Search } from "lucide-react";
+import {
+  FileText,
+  Plus,
+  Settings,
+  HelpCircle,
+  Search,
+  Database,
+} from "lucide-react";
 
 interface SidebarProps {
   posts: PostMeta[];
@@ -8,6 +15,7 @@ interface SidebarProps {
   onCreatePost: () => void;
   onShowHelp: () => void;
   onShowSearch: () => void;
+  onShowPostList: () => void;
 }
 
 export function Sidebar({
@@ -17,6 +25,7 @@ export function Sidebar({
   onCreatePost,
   onShowHelp,
   onShowSearch,
+  onShowPostList,
 }: SidebarProps) {
   return (
     <div className="sidebar">
@@ -62,6 +71,9 @@ export function Sidebar({
         </button>
         <button className="help-btn" onClick={onShowHelp} title="도움말">
           <HelpCircle size={16} />
+        </button>
+        <button className="api-btn" onClick={onShowPostList} title="API 테스트">
+          <Database size={16} />
         </button>
         <button className="settings-btn" title="설정">
           <Settings size={16} />
