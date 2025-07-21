@@ -12,6 +12,17 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    rollupOptions: {
+      external: [],
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          ui: ["lucide-react"],
+        },
+      },
+    },
+  },
   define: {
     global: "globalThis",
   },
