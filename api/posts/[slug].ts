@@ -26,13 +26,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: "Invalid slug" });
   }
 
-  const filePath = path.join(process.cwd(), "content/posts", `${slug}.mdx`);
-  console.log("File path:", filePath);
-  console.log("File exists:", fs.existsSync(filePath));
+  // MDX와 MD 파일 모두 확인
+  const mdxPath = path.join(process.cwd(), "content/posts", `${slug}.mdx`);
+  const mdPath = path.join(process.cwd(), "content/posts", `${slug}.md`);
 
-  if (!fs.existsSync(filePath)) {
+  let filePath: string;
+  if (fs.existsSync(mdxPath)) {
+    filePath = mdxPath;
+  } else if (fs.existsSync(mdPath)) {
+    filePath = mdPath;
+  } else {
     return res.status(404).json({ error: "Post not found" });
   }
+
+  console.log("File path:", filePath);
+  console.log("File exists:", fs.existsSync(filePath));
 
   try {
     const format = (req.query.format as string) || "json";
@@ -46,11 +54,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         const includeStyles = req.query.styles !== "false";
         const includeMetadata = req.query.metadata === "true";
         const highlightTheme = (req.query.theme as string) || "github";
+        const isMdx = filePath.endsWith(".mdx");
+
+        // 클라이언트 컴포넌트 목록 (쿼리 파라미터에서 받을 수 있음)
+        const clientComponents = req.query.components
+          ? (req.query.components as string).split(",")
+          : ["Alert", "CodeBlock", "Button", "Card"];
 
         const html = await mdxToHtml(post.content, {
           includeStyles,
           includeMetadata,
           highlightTheme,
+          isMdx,
+          clientComponents,
         });
 
         const finalHtml = createHtmlResponse(html, {

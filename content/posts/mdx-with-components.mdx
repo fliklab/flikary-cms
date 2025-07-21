@@ -1,0 +1,79 @@
+---
+title: MDX with Custom Components
+description: MDX 커스텀 컴포넌트 테스트
+date: 2024-01-15
+tags: [mdx, components, react]
+---
+
+# MDX with Custom Components
+
+이것은 **MDX 파일**에 커스텀 컴포넌트가 포함된 예시입니다.
+
+## 일반 Markdown 문법
+
+일반적인 Markdown 문법도 그대로 사용할 수 있습니다:
+
+- **굵은 글씨**
+- *기울임 글씨*
+- `인라인 코드`
+
+## 코드 블록
+
+```javascript
+function hello() {
+  console.log("Hello from MDX!");
+}
+```
+
+## 테이블
+
+| 기능 | MDX | MD |
+|------|-----|----|
+| 커스텀 컴포넌트 | ✅ | ❌ |
+| HTML 태그 | ✅ | ✅ |
+| Front matter | ✅ | ✅ |
+
+## 커스텀 컴포넌트 시뮬레이션
+
+MDX에서는 다음과 같은 커스텀 컴포넌트를 사용할 수 있습니다:
+
+<Alert type="info">
+  이것은 정보 알림입니다.
+</Alert>
+
+<CodeBlock language="javascript">
+function example() {
+  return "Hello World";
+}
+</CodeBlock>
+
+<Button variant="primary" onClick={() => console.log('clicked')}>
+  클릭하세요
+</Button>
+
+<Card title="카드 제목">
+  이것은 카드 컴포넌트입니다.
+</Card>
+
+## HTML 태그 직접 사용
+
+MDX에서는 HTML 태그를 직접 사용할 수 있습니다:
+
+<div style="background: #f0f0f0; padding: 1rem; border-radius: 4px;">
+  <h3>커스텀 스타일</h3>
+  <p>이것은 직접 작성한 HTML입니다.</p>
+</div>
+
+## 수학 공식
+
+MDX는 수학 공식도 지원합니다:
+
+$E = mc^2$
+
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
+
+---
+
+*MDX는 React 컴포넌트와 Markdown을 결합한 강력한 포맷입니다!* 

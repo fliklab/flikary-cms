@@ -14,13 +14,21 @@ export default function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: "Invalid slug" });
   }
 
-  const filePath = path.join(process.cwd(), "content/posts", `${slug}.mdx`);
-  console.log("Raw File path:", filePath);
-  console.log("Raw File exists:", fs.existsSync(filePath));
+  // MDX와 MD 파일 모두 확인
+  const mdxPath = path.join(process.cwd(), "content/posts", `${slug}.mdx`);
+  const mdPath = path.join(process.cwd(), "content/posts", `${slug}.md`);
 
-  if (!fs.existsSync(filePath)) {
+  let filePath: string;
+  if (fs.existsSync(mdxPath)) {
+    filePath = mdxPath;
+  } else if (fs.existsSync(mdPath)) {
+    filePath = mdPath;
+  } else {
     return res.status(404).json({ error: "Post not found" });
   }
+
+  console.log("Raw File path:", filePath);
+  console.log("Raw File exists:", fs.existsSync(filePath));
 
   try {
     // 원본 MDX 파일 내용 읽기

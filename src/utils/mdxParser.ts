@@ -6,8 +6,9 @@ import { Post } from "@/types/Post";
 export function parseMdxFile(filePath: string): Post {
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(raw);
+  const ext = path.extname(filePath);
   return {
-    slug: path.basename(filePath, ".mdx"),
+    slug: path.basename(filePath, ext),
     title: data.title || "",
     date: data.date || "",
     tags: data.tags || [],
@@ -16,6 +17,8 @@ export function parseMdxFile(filePath: string): Post {
 }
 
 export function getAllPosts(dir: string): Post[] {
-  const files = fs.readdirSync(dir).filter((f) => f.endsWith(".mdx"));
+  const files = fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(".mdx") || f.endsWith(".md"));
   return files.map((f) => parseMdxFile(path.join(dir, f)));
 }

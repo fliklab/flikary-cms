@@ -11,21 +11,32 @@ export interface HtmlTransformOptions {
   includeStyles?: boolean;
   includeMetadata?: boolean;
   highlightTheme?: string;
+  isMdx?: boolean; // MDX 파일인지 MD 파일인지 구분
+  clientComponents?: string[]; // 클라이언트에서 처리할 컴포넌트 목록
 }
 
 export async function mdxToHtml(
-  mdxContent: string,
+  content: string,
   options: HtmlTransformOptions = {}
 ): Promise<string> {
   const {
     includeStyles = true,
     includeMetadata = false,
     highlightTheme = "github",
+    isMdx = true, // 기본값은 MDX로 설정
+    clientComponents = [],
   } = options;
 
   try {
-    // 간단한 Markdown → HTML 변환
-    let html = simpleMarkdownToHtml(mdxContent);
+    let html: string;
+
+    if (isMdx) {
+      // MDX 파일인 경우: MDX 컴파일러 사용
+      html = await processMdxContent(content, clientComponents);
+    } else {
+      // MD 파일인 경우: 일반 Markdown 처리
+      html = await processMarkdownContent(content);
+    }
 
     // 스타일 포함 옵션
     if (includeStyles) {
@@ -39,14 +50,83 @@ export async function mdxToHtml(
 
     return html;
   } catch (error) {
-    console.error("MDX to HTML conversion failed:", error);
-    throw new Error("Failed to convert MDX to HTML");
+    console.error("Content to HTML conversion failed:", error);
+    // 에러 발생 시 fallback으로 간단한 변환 사용
+    return fallbackConversion(
+      content,
+      includeStyles,
+      includeMetadata,
+      highlightTheme
+    );
   }
 }
 
-function simpleMarkdownToHtml(markdown: string): string {
-  // 간단한 Markdown → HTML 변환
-  let html = markdown
+async function processMdxContent(
+  mdxContent: string,
+  clientComponents: string[] = []
+): Promise<string> {
+  try {
+    // 클라이언트 컴포넌트를 위한 커스텀 처리
+    let processedContent = mdxContent;
+
+    // 클라이언트 컴포넌트를 주석으로 변환 (클라이언트에서 처리하도록)
+    clientComponents.forEach((componentName) => {
+      const regex = new RegExp(
+        `<${componentName}[^>]*>([\\s\\S]*?)</${componentName}>`,
+        "g"
+      );
+      processedContent = processedContent.replace(regex, (match, content) => {
+        return `<!-- CLIENT_COMPONENT:${componentName} -->\n${content}\n<!-- /CLIENT_COMPONENT:${componentName} -->`;
+      });
+    });
+
+    // MDX를 HTML로 컴파일 (개발 모드로 설정)
+    const compiledMdx = await compile(processedContent, {
+      development: false, // 프로덕션 모드로 설정
+      remarkPlugins: [remarkGfm, remarkMath],
+      rehypePlugins: [rehypeHighlight, rehypeKatex, rehypeStringify],
+    });
+
+    // 컴파일된 결과를 문자열로 변환
+    const html = String(compiledMdx);
+    return html;
+  } catch (error) {
+    console.error("MDX compilation failed:", error);
+    throw error;
+  }
+}
+
+async function processMarkdownContent(
+  markdownContent: string
+): Promise<string> {
+  try {
+    // 일반 Markdown을 HTML로 변환
+    const result = await unified()
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkMath)
+      .use(rehypeHighlight)
+      .use(rehypeKatex)
+      .use(rehypeStringify)
+      .process(markdownContent);
+
+    return String(result);
+  } catch (error) {
+    console.error("Markdown processing failed:", error);
+    throw error;
+  }
+}
+
+function fallbackConversion(
+  content: string,
+  includeStyles: boolean,
+  includeMetadata: boolean,
+  highlightTheme: string
+): string {
+  console.warn("Using fallback conversion");
+
+  // 간단한 Markdown → HTML 변환 (fallback)
+  let html = content
     // 제목
     .replace(/^# (.*$)/gim, "<h1>$1</h1>")
     .replace(/^## (.*$)/gim, "<h2>$1</h2>")
@@ -66,6 +146,14 @@ function simpleMarkdownToHtml(markdown: string): string {
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
     // 줄바꿈
     .replace(/\n/g, "<br>\n");
+
+  if (includeStyles) {
+    html = addStyles(html, highlightTheme);
+  }
+
+  if (includeMetadata) {
+    html = addMetadata(html);
+  }
 
   return html;
 }
@@ -123,6 +211,58 @@ function addStyles(html: string, theme: string): string {
       
       a:hover {
         text-decoration: underline;
+      }
+      
+      /* 테이블 스타일 */
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 1em 0;
+      }
+      
+      th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+      }
+      
+      th {
+        background-color: #f6f8fa;
+        font-weight: 600;
+      }
+      
+      /* 인용구 스타일 */
+      blockquote {
+        border-left: 4px solid #ddd;
+        margin: 1em 0;
+        padding-left: 1em;
+        color: #666;
+      }
+      
+      /* 목록 스타일 */
+      ul, ol {
+        margin: 1em 0;
+        padding-left: 2em;
+      }
+      
+      li {
+        margin: 0.5em 0;
+      }
+      
+      /* 클라이언트 컴포넌트 스타일 */
+      .client-component {
+        border: 2px dashed #ccc;
+        padding: 1rem;
+        margin: 1rem 0;
+        background: #f9f9f9;
+      }
+      
+      .client-component::before {
+        content: "🔧 클라이언트 컴포넌트";
+        display: block;
+        font-size: 0.8em;
+        color: #666;
+        margin-bottom: 0.5rem;
       }
     </style>
   `;

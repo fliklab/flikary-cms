@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: MDX CMS API
-  description: Git 기반 MDX 파일을 REST API로 제공하는 Headless CMS
+  title: MD/MDX CMS API
+  description: Git 기반 MD/MDX 파일을 REST API로 제공하는 Headless CMS
   version: 1.0.0
   contact:
     name: API Support
@@ -20,7 +20,7 @@ paths:
   /api/posts:
     get:
       summary: 모든 포스트 목록 조회
-      description: MDX 파일들의 메타데이터 목록을 JSON 형태로 반환합니다.
+      description: MD/MDX 파일들의 메타데이터 목록을 JSON 형태로 반환합니다.
       operationId: getPosts
       tags:
         - Posts
@@ -235,8 +235,8 @@ paths:
 
   /api/posts/{slug}/raw:
     get:
-      summary: 포스트 원본 MDX
-      description: 지정된 slug의 포스트 원본 MDX 파일 내용을 반환합니다.
+      summary: 포스트 원본 MD/MDX
+      description: 지정된 slug의 포스트 원본 MD/MDX 파일 내용을 반환합니다.
       operationId: getPostRaw
       tags:
         - Posts
@@ -310,7 +310,7 @@ components:
           example: "첫 번째 포스트입니다."
         content:
           type: string
-          description: 포스트 내용 (MDX 형식)
+          description: 포스트 내용 (MD/MDX 형식)
           example: "# Hello World\n\n안녕하세요! 이것은 첫 번째 포스트입니다."
         date:
           type: string
