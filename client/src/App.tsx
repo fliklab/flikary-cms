@@ -1,17 +1,27 @@
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { PostViewer } from "./components/PostViewer";
 import { PostEditor } from "./components/PostEditor";
 import { HelpPage } from "./components/HelpPage";
 import { AlertModal } from "./components/AlertModal";
+import { LoadingSpinner } from "./components/LoadingSpinner";
+import { SuspenseBoundary } from "./components/SuspenseBoundary";
+import { SearchBar } from "./components/SearchBar";
 import { usePosts, usePost } from "./hooks/usePosts";
 import "./App.css";
 
 function App() {
-  const { posts, loading: postsLoading, error: postsError } = usePosts();
+  const {
+    posts,
+    loading: postsLoading,
+    error: postsError,
+    isPending: postsPending,
+  } = usePosts();
   const [selectedPost, setSelectedPost] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [alertModal, setAlertModal] = useState<{
     isOpen: boolean;
     title: string;
@@ -30,11 +40,14 @@ function App() {
     post,
     loading: postLoading,
     error: postError,
+    isPending: postPending,
   } = usePost(selectedPost || "");
 
   const handleSelectPost = (slug: string) => {
-    setSelectedPost(slug);
-    setIsEditing(false);
+    startTransition(() => {
+      setSelectedPost(slug);
+      setIsEditing(false);
+    });
   };
 
   const handleCreatePost = () => {
@@ -64,7 +77,9 @@ function App() {
   };
 
   const handleEditPost = () => {
-    setIsEditing(true);
+    startTransition(() => {
+      setIsEditing(true);
+    });
   };
 
   const handleSavePost = (content: string) => {
@@ -79,11 +94,21 @@ function App() {
   };
 
   const handleCancelEdit = () => {
-    setIsEditing(false);
+    startTransition(() => {
+      setIsEditing(false);
+    });
   };
 
   const handleShowHelp = () => {
-    setShowHelp(true);
+    startTransition(() => {
+      setShowHelp(true);
+    });
+  };
+
+  const handleShowSearch = () => {
+    startTransition(() => {
+      setShowSearch(true);
+    });
   };
 
   const handleCloseAlertModal = () => {
@@ -108,60 +133,69 @@ function App() {
 
   return (
     <div className="app">
+      {(isPending || postsPending || postPending) && (
+        <div className="transition-loading" />
+      )}
       <Sidebar
         posts={posts}
         selectedPost={selectedPost || undefined}
         onSelectPost={handleSelectPost}
         onCreatePost={handleCreatePost}
         onShowHelp={handleShowHelp}
+        onShowSearch={handleShowSearch}
       />
 
       <div className="main-content">
-        {showHelp ? (
-          <HelpPage onBack={() => setShowHelp(false)} />
-        ) : selectedPost ? (
-          postLoading ? (
-            <div className="loading">포스트 로딩 중...</div>
-          ) : postError ? (
-            <div className="error">포스트 에러: {postError}</div>
-          ) : post ? (
-            isEditing ? (
-              <PostEditor
-                initialContent={post.content}
-                onSave={handleSavePost}
-                onCancel={handleCancelEdit}
-              />
+        <SuspenseBoundary>
+          {showHelp ? (
+            <HelpPage onBack={() => setShowHelp(false)} />
+          ) : selectedPost ? (
+            postLoading ? (
+              <div className="loading">
+                <LoadingSpinner size={24} />
+                <p>포스트 로딩 중...</p>
+              </div>
+            ) : postError ? (
+              <div className="error">포스트 에러: {postError}</div>
+            ) : post ? (
+              isEditing ? (
+                <PostEditor
+                  initialContent={post.content}
+                  onSave={handleSavePost}
+                  onCancel={handleCancelEdit}
+                />
+              ) : (
+                <PostViewer
+                  post={post}
+                  onEdit={handleEditPost}
+                  onDelete={handleDeletePost}
+                />
+              )
             ) : (
-              <PostViewer
-                post={post}
-                onEdit={handleEditPost}
-                onDelete={handleDeletePost}
-              />
+              <div className="no-post">포스트를 선택해주세요.</div>
             )
           ) : (
-            <div className="no-post">포스트를 선택해주세요.</div>
-          )
-        ) : (
-          <div className="welcome">
-            <h1>Flikary CMS에 오신 것을 환영합니다</h1>
-            <p>왼쪽에서 포스트를 선택하거나 새 포스트를 작성하세요.</p>
-            <button
-              className="help-link"
-              onClick={handleShowHelp}
-              style={{
-                marginTop: "20px",
-                padding: "8px 16px",
-                background: "#007bff",
-                color: "white",
-                border: "none",
-                borderRadius: "6px",
-                cursor: "pointer",
-              }}
-            >
-              도움말 보기
-            </button>
-          </div>
-        )}
+            <div className="welcome">
+              <h1>Flikary CMS에 오신 것을 환영합니다</h1>
+              <p>왼쪽에서 포스트를 선택하거나 새 포스트를 작성하세요.</p>
+              <button
+                className="help-link"
+                onClick={handleShowHelp}
+                style={{
+                  marginTop: "20px",
+                  padding: "8px 16px",
+                  background: "#007bff",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "6px",
+                  cursor: "pointer",
+                }}
+              >
+                도움말 보기
+              </button>
+            </div>
+          )}
+        </SuspenseBoundary>
       </div>
 
       <AlertModal
@@ -173,6 +207,14 @@ function App() {
         confirmText={alertModal.confirmText}
         onConfirm={alertModal.onConfirm}
       />
+
+      {showSearch && (
+        <SearchBar
+          posts={posts}
+          onSelectPost={handleSelectPost}
+          onClose={() => setShowSearch(false)}
+        />
+      )}
     </div>
   );
 }

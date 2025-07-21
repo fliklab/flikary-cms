@@ -1,5 +1,5 @@
 import { PostMeta } from "../types/Post";
-import { FileText, Plus, Settings, HelpCircle } from "lucide-react";
+import { FileText, Plus, Settings, HelpCircle, Search } from "lucide-react";
 
 interface SidebarProps {
   posts: PostMeta[];
@@ -7,6 +7,7 @@ interface SidebarProps {
   onSelectPost: (slug: string) => void;
   onCreatePost: () => void;
   onShowHelp: () => void;
+  onShowSearch: () => void;
 }
 
 export function Sidebar({
@@ -15,6 +16,7 @@ export function Sidebar({
   onSelectPost,
   onCreatePost,
   onShowHelp,
+  onShowSearch,
 }: SidebarProps) {
   return (
     <div className="sidebar">
@@ -55,6 +57,9 @@ export function Sidebar({
       </div>
 
       <div className="sidebar-footer">
+        <button className="search-btn" onClick={onShowSearch} title="검색">
+          <Search size={16} />
+        </button>
         <button className="help-btn" onClick={onShowHelp} title="도움말">
           <HelpCircle size={16} />
         </button>
