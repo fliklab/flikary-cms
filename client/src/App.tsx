@@ -2,6 +2,7 @@ import { useState, useTransition } from "react";
 import { Sidebar } from "./components/Sidebar";
 import { PostViewer } from "./components/PostViewer";
 import { PostEditor } from "./components/PostEditor";
+import { RichTextEditor } from "./components/RichTextEditor";
 import { HelpPage } from "./components/HelpPage";
 import { AlertModal } from "./components/AlertModal";
 import { LoadingSpinner } from "./components/LoadingSpinner";
@@ -159,7 +160,7 @@ function App() {
               <div className="error">포스트 에러: {postError}</div>
             ) : post ? (
               isEditing ? (
-                <PostEditor
+                <RichTextEditor
                   initialContent={post.content}
                   onSave={handleSavePost}
                   onCancel={handleCancelEdit}

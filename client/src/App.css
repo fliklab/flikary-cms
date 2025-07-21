@@ -958,3 +958,220 @@ body {
   text-align: center;
   color: #6c757d;
 }
+
+/* Rich Text Editor styles */
+.rich-text-editor {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 12px 24px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.toolbar-btn {
+  background: none;
+  border: none;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.toolbar-btn:hover {
+  background: #e9ecef;
+  color: #495057;
+}
+
+.toolbar-btn.active {
+  background: #007bff;
+  color: white;
+}
+
+.toolbar-separator {
+  width: 1px;
+  height: 20px;
+  background: #dee2e6;
+  margin: 0 4px;
+}
+
+.editor-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.editor-content-area {
+  flex: 1;
+  padding: 24px;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.6;
+}
+
+.editor-content-area .ProseMirror {
+  outline: none;
+  min-height: 400px;
+}
+
+.editor-content-area .ProseMirror p {
+  margin: 0 0 16px 0;
+}
+
+.editor-content-area .ProseMirror h1,
+.editor-content-area .ProseMirror h2,
+.editor-content-area .ProseMirror h3,
+.editor-content-area .ProseMirror h4,
+.editor-content-area .ProseMirror h5,
+.editor-content-area .ProseMirror h6 {
+  margin: 24px 0 16px 0;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.editor-content-area .ProseMirror h1 {
+  font-size: 28px;
+}
+
+.editor-content-area .ProseMirror h2 {
+  font-size: 24px;
+}
+
+.editor-content-area .ProseMirror h3 {
+  font-size: 20px;
+}
+
+.editor-content-area .ProseMirror ul,
+.editor-content-area .ProseMirror ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.editor-content-area .ProseMirror li {
+  margin: 4px 0;
+}
+
+.editor-content-area .ProseMirror blockquote {
+  margin: 16px 0;
+  padding: 12px 16px;
+  border-left: 4px solid #007bff;
+  background: #f8f9fa;
+  font-style: italic;
+}
+
+.editor-content-area .ProseMirror code {
+  background: #f1f3f4;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.9em;
+}
+
+.editor-content-area .ProseMirror pre {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 16px;
+  overflow-x: auto;
+  margin: 16px 0;
+}
+
+.editor-content-area .ProseMirror pre code {
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
+
+.editor-content-area .ProseMirror a {
+  color: #007bff;
+  text-decoration: underline;
+}
+
+.editor-content-area .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin: 16px 0;
+}
+
+/* Markdown view styles */
+.markdown-view {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.markdown-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e9ecef;
+  background: #f8f9fa;
+}
+
+.markdown-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.sync-btn {
+  background: #28a745;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.sync-btn:hover {
+  background: #218838;
+}
+
+.markdown-textarea {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 24px;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  resize: none;
+  background: #f8f9fa;
+}
+
+.markdown-textarea:focus {
+  background: white;
+}
+
+.view-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.view-btn:hover {
+  background: #5a6268;
+}
