@@ -1,6 +1,10 @@
 {
   "routes": [
     {
+      "src": "/",
+      "dest": "/api/index.ts"
+    },
+    {
       "src": "/api/posts",
       "dest": "/api/posts/index.ts"
     },

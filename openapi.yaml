@@ -1,0 +1,371 @@
+openapi: 3.0.3
+info:
+  title: MDX CMS API
+  description: Git 기반 MDX 파일을 REST API로 제공하는 Headless CMS
+  version: 1.0.0
+  contact:
+    name: API Support
+    email: support@example.com
+  license:
+    name: ISC
+    url: https://opensource.org/licenses/ISC
+
+servers:
+  - url: https://flikary-cms-api.vercel.app
+    description: Production server
+  - url: http://localhost:3000
+    description: Development server
+
+paths:
+  /api/posts:
+    get:
+      summary: 모든 포스트 목록 조회
+      description: MDX 파일들의 메타데이터 목록을 JSON 형태로 반환합니다.
+      operationId: getPosts
+      tags:
+        - Posts
+      responses:
+        '200':
+          description: 포스트 목록 조회 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  posts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostMeta'
+              example:
+                posts:
+                  - slug: "hello-world"
+                    title: "Hello World"
+                    description: "첫 번째 포스트입니다."
+                    date: "2024-01-01"
+                    tags: ["intro", "getting-started"]
+                  - slug: "getting-started"
+                    title: "시작하기"
+                    description: "프로젝트 시작 가이드"
+                    date: "2024-01-02"
+                    tags: ["guide", "tutorial"]
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/posts/{slug}:
+    get:
+      summary: 특정 포스트 조회
+      description: 지정된 slug의 포스트를 다양한 형식으로 조회합니다.
+      operationId: getPost
+      tags:
+        - Posts
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: 포스트의 고유 식별자
+          schema:
+            type: string
+            example: "hello-world"
+        - name: format
+          in: query
+          required: false
+          description: 응답 형식 지정
+          schema:
+            type: string
+            enum: [json, html, raw]
+            default: json
+          example: "json"
+        - name: styles
+          in: query
+          required: false
+          description: HTML 형식에서 스타일 포함 여부 (format=html일 때만)
+          schema:
+            type: string
+            enum: ["true", "false"]
+            default: "true"
+        - name: metadata
+          in: query
+          required: false
+          description: HTML 형식에서 메타데이터 포함 여부 (format=html일 때만)
+          schema:
+            type: string
+            enum: ["true", "false"]
+            default: "false"
+        - name: theme
+          in: query
+          required: false
+          description: 코드 하이라이팅 테마 (format=html일 때만)
+          schema:
+            type: string
+            default: "github"
+            example: "github"
+      responses:
+        '200':
+          description: 포스트 조회 성공
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+              example:
+                slug: "hello-world"
+                title: "Hello World"
+                description: "첫 번째 포스트입니다."
+                content: "# Hello World\n\n안녕하세요! 이것은 첫 번째 포스트입니다."
+                date: "2024-01-01"
+                tags: ["intro", "getting-started"]
+            text/html:
+              schema:
+                type: string
+              example: |
+                <h1>Hello World</h1>
+                <p>안녕하세요! 이것은 첫 번째 포스트입니다.</p>
+            text/markdown:
+              schema:
+                type: string
+              example: |
+                ---
+                title: Hello World
+                description: 첫 번째 포스트입니다.
+                date: 2024-01-01
+                tags: [intro, getting-started]
+                ---
+                
+                # Hello World
+                
+                안녕하세요! 이것은 첫 번째 포스트입니다.
+        '400':
+          description: 잘못된 slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 포스트를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/posts/{slug}/html:
+    get:
+      summary: 포스트 HTML 변환
+      description: 지정된 slug의 포스트를 HTML로 변환하여 반환합니다.
+      operationId: getPostHtml
+      tags:
+        - Posts
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: 포스트의 고유 식별자
+          schema:
+            type: string
+            example: "hello-world"
+        - name: styles
+          in: query
+          required: false
+          description: 스타일 포함 여부
+          schema:
+            type: string
+            enum: ["true", "false"]
+            default: "true"
+        - name: metadata
+          in: query
+          required: false
+          description: 메타데이터 포함 여부
+          schema:
+            type: string
+            enum: ["true", "false"]
+            default: "false"
+        - name: theme
+          in: query
+          required: false
+          description: 코드 하이라이팅 테마
+          schema:
+            type: string
+            default: "github"
+            example: "github"
+      responses:
+        '200':
+          description: HTML 변환 성공
+          content:
+            text/html:
+              schema:
+                type: string
+              example: |
+                <!DOCTYPE html>
+                <html>
+                <head>
+                  <meta charset="utf-8">
+                  <title>Hello World</title>
+                </head>
+                <body>
+                  <h1>Hello World</h1>
+                  <p>안녕하세요! 이것은 첫 번째 포스트입니다.</p>
+                </body>
+                </html>
+        '400':
+          description: 잘못된 slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 포스트를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/posts/{slug}/raw:
+    get:
+      summary: 포스트 원본 MDX
+      description: 지정된 slug의 포스트 원본 MDX 파일 내용을 반환합니다.
+      operationId: getPostRaw
+      tags:
+        - Posts
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          description: 포스트의 고유 식별자
+          schema:
+            type: string
+            example: "hello-world"
+      responses:
+        '200':
+          description: 원본 MDX 반환 성공
+          content:
+            text/markdown:
+              schema:
+                type: string
+              example: |
+                ---
+                title: Hello World
+                description: 첫 번째 포스트입니다.
+                date: 2024-01-01
+                tags: [intro, getting-started]
+                ---
+                
+                # Hello World
+                
+                안녕하세요! 이것은 첫 번째 포스트입니다.
+        '400':
+          description: 잘못된 slug
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 포스트를 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: 서버 내부 오류
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Post:
+      type: object
+      required:
+        - slug
+        - title
+        - content
+        - date
+        - tags
+      properties:
+        slug:
+          type: string
+          description: 포스트의 고유 식별자
+          example: "hello-world"
+        title:
+          type: string
+          description: 포스트 제목
+          example: "Hello World"
+        description:
+          type: string
+          description: 포스트 설명
+          example: "첫 번째 포스트입니다."
+        content:
+          type: string
+          description: 포스트 내용 (MDX 형식)
+          example: "# Hello World\n\n안녕하세요! 이것은 첫 번째 포스트입니다."
+        date:
+          type: string
+          format: date
+          description: 포스트 작성일
+          example: "2024-01-01"
+        tags:
+          type: array
+          items:
+            type: string
+          description: 포스트 태그 목록
+          example: ["intro", "getting-started"]
+
+    PostMeta:
+      type: object
+      required:
+        - slug
+        - title
+        - date
+        - tags
+      properties:
+        slug:
+          type: string
+          description: 포스트의 고유 식별자
+          example: "hello-world"
+        title:
+          type: string
+          description: 포스트 제목
+          example: "Hello World"
+        description:
+          type: string
+          description: 포스트 설명
+          example: "첫 번째 포스트입니다."
+        date:
+          type: string
+          format: date
+          description: 포스트 작성일
+          example: "2024-01-01"
+        tags:
+          type: array
+          items:
+            type: string
+          description: 포스트 태그 목록
+          example: ["intro", "getting-started"]
+
+    Error:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+          description: 오류 메시지
+          example: "Post not found"
+
+tags:
+  - name: Posts
+    description: 포스트 관련 API 엔드포인트 
