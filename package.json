@@ -6,7 +6,6 @@
   "main": "index.js",
   "scripts": {
     "test": "jest --rootDir . --verbose",
-    "build": "cd client && pnpm install && pnpm run build",
     "validate-openapi": "node scripts/validate-openapi.js"
   },
   "keywords": [],
