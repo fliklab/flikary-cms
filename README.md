@@ -1,38 +1,64 @@
 # Git 기반 MDX CMS API
 
-## Introdution
+## Introduction
 
-- git 저장소와 mdx 파일을 기반으로 하는 Headless CMS API 서버
+- MD/MDX 파일을 기반으로 하는 Headless CMS API 서버입니다.
 - React, TypeScript, Vite, pnpm, Node.js, Vercel, Github API 등 사용
-- MDX 파일을 JSON, HTML, 원본 MDX 형태로 제공하는 REST API
+- MD/MDX 파일을 JSON, HTML, 원본 형태로 제공하는 REST API
 
 ## Features
 
-- **MDX 파싱**: Front matter와 본문 분리, 메타데이터 추출
+- **MD/MDX 파싱**: Front matter와 본문 분리, 메타데이터 추출
 - **REST API**: 포스트 목록 및 상세 조회 API
-- **HTML 변환**: MDX 파일을 HTML로 변환하여 제공
-- **다양한 응답 형식**: JSON, HTML, 원본 MDX 지원
+- **HTML 변환**: MD/MDX 파일을 HTML로 변환하여 제공
+- **다양한 응답 형식**: JSON, HTML, 원본 MD/MDX 지원
 - **서버리스 아키텍처**: Vercel Functions 기반
+- **커스텀 컴포넌트 지원**: MDX 파일의 React 컴포넌트 처리
+- **HTML 태그 지원**: MD 파일의 HTML 태그 렌더링
 
 ## API Endpoint
 
-### 포스트 관련
+### Posts
 
 - `GET /api/posts` - 모든 포스트 목록 (JSON)
 - `GET /api/posts/:slug` - 특정 포스트 상세 (JSON)
 - `GET /api/posts/:slug/html` - 특정 포스트 HTML 변환
-- `GET /api/posts/:slug/raw` - 특정 포스트 원본 MDX
+- `GET /api/posts/:slug/raw` - 특정 포스트 원본 MD/MDX
 
-### 응답 형식 옵션
+### Format
 
 - `?format=json` (기본): JSON 형태로 반환
 - `?format=html`: HTML로 변환된 내용 반환
-- `?format=mdx`: 원본 MDX 내용 반환
+- `?format=raw`: 원본 MD/MDX 내용 반환
+
+### 클라이언트 컴포넌트 옵션
+
+- `?components=Alert,CodeBlock,Button`: 클라이언트에서 처리할 컴포넌트 목록 지정
+- 기본값: `Alert,CodeBlock,Button,Card`
+- 클라이언트 컴포넌트는 HTML 주석으로 변환되어 클라이언트 앱에서 처리
 
 ### API 문서
 
 - `GET /api/openapi` - OpenAPI 3.0 명세 (YAML)
 - `GET /api/docs` - Swagger UI 문서
+
+## MD/MDX 처리 방식
+
+### MDX 파일 (`.mdx`)
+
+- **커스텀 React 컴포넌트** 지원 (클라이언트에서 처리)
+- **HTML 태그** 직접 사용 가능
+- **수학 공식** (KaTeX) 지원
+- **GitHub Flavored Markdown** 지원
+- **코드 하이라이팅** 지원
+
+### MD 파일 (`.md`)
+
+- **일반 Markdown** 문법 지원
+- **HTML 태그** 직접 사용 가능
+- **GitHub Flavored Markdown** 지원
+- **코드 하이라이팅** 지원
+- **수학 공식** (KaTeX) 지원
 
 ### Example
 
@@ -103,6 +129,28 @@ curl http://localhost:3000/api/posts/hello-world/html
 curl http://localhost:3000/api/posts/hello-world/raw
 ```
 
+#### 클라이언트 컴포넌트 처리
+
+```bash
+# 기본 클라이언트 컴포넌트 처리
+curl http://localhost:3000/api/posts/mdx-with-components/html
+
+# 특정 컴포넌트만 클라이언트에서 처리
+curl "http://localhost:3000/api/posts/mdx-with-components/html?components=Alert,CodeBlock"
+```
+
+**응답 예시:**
+
+```html
+<!-- CLIENT_COMPONENT:Alert -->
+이것은 정보 알림입니다.
+<!-- /CLIENT_COMPONENT:Alert -->
+
+<!-- CLIENT_COMPONENT:CodeBlock -->
+function example() { return "Hello World"; }
+<!-- /CLIENT_COMPONENT:CodeBlock -->
+```
+
 **응답:**
 
 ```mdx
@@ -120,12 +168,21 @@ tags: [intro, getting-started]
 
 ## Tech Stack
 
+### API 서버
+
 - React, TypeScript, Vite, pnpm
 - Node.js (Vercel Serverless Functions)
 - mdx, gray-matter
 - @mdx-js/mdx, remark, rehype (MDX → HTML 변환)
 - Jest, Testing Library
 - Github Actions, Vercel
+
+### CMS 클라이언트
+
+- React 18, TypeScript, Vite
+- Lucide React (아이콘)
+- 미니멀 브루탈리즘 디자인
+- GitHub API 연동 (예정)
 
 ## Development
 
@@ -153,4 +210,9 @@ curl http://localhost:3000/api/posts/hello-world/raw
 # API 문서 확인
 curl http://localhost:3000/api/openapi
 # 브라우저에서 http://localhost:3000/api/docs 접속
+
+# CMS 클라이언트 실행
+cd client && pnpm dev
+# 브라우저에서 http://localhost:3001 접속
+# 도움말: 사이드바 하단의 도움말 버튼 클릭
 ```
